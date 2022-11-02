@@ -1,12 +1,13 @@
 import React from 'react';
 import Header from './../components/Header';
-import { withRouter } from 'react-router';
+import Footer from './../components/Footer';
 
 const HomepageLayout = props => {
   return (
     <div className = "fullHeight">
         <Header/>
             {props.children}
+            <Footer />
     </div>
   );
 };
