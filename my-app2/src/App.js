@@ -22,12 +22,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      ...initialState
+      ...initialState //Initializes the current login state
     };
   }
 
   authListener = null;
-
+  // user has logged in
   componentDidMount() {
     this.authListener = auth.onAuthStateChanged(async userAuth => {
         if (userAuth) {
@@ -65,14 +65,14 @@ class App extends Component {
               <Homepage />
             </HomepageLayout>
           )} />
-          <Route path ="/registration" render={() => (
+          <Route path ="/registration" render={() => currentUser ? < Redirect to ="/" /> : (
             <MainLayout currentUser={currentUser}>
               <Registration />
             </MainLayout>
           )} />
   
           <Route path ="/login" 
-            render={() => currentUser ? < Redirect /> : (
+            render={() => currentUser ? < Redirect to = "/" /> : (
             <MainLayout currentUser={currentUser}>
               <Login />
             </MainLayout>

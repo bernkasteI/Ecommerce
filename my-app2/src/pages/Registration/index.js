@@ -1,18 +1,13 @@
 import React, { Component } from 'react';
 import './styles.scss';
-import { withRouter } from 'react-router';
+import Signup from './../../components/Signup';
 
 class Registration extends Component {
     render() {
         return (
-            <div>
-                <h1>
-                    Registration Page
-                </h1>
-            </div>
-
+            <Signup />
         );
     }
 }
 
-export default withRouter(Registration);
+export default Registration;

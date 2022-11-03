@@ -13,19 +13,22 @@ const GoogleProvider = new firebase.auth.GoogleAuthProvider();
 GoogleProvider.setCustomParameters( { prompt: 'select_account'} );
 export const signInWithGoogle = () => auth.signInWithPopup(GoogleProvider);
 
+                         //userAuth has email and id data for logged in user
 export const handleUserProfile = async (userAuth,  additionalData) => {
-    if (!userAuth) return;
+    if (!userAuth) return; //check if user is valid. 
      const { uid } = userAuth;
 
     const userRef = firestore.doc(`users/${uid}`);
     const snapshot = await userRef.get();
 
+        // if user does not exist
     if (!snapshot.exists) {
 
         const { displayName, email } = userAuth;
         const timestamp = new Date();
 
         try {
+            // new document in user's collection stores user information
             await userRef.set ( {
                 displayName,
                 email,
@@ -37,5 +40,5 @@ export const handleUserProfile = async (userAuth,  additionalData) => {
             console.log(err);
         }
     }
-    return userRef;
+    return userRef; //store user info in local state of app, to sign them in
 };
