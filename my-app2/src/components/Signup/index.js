@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './styles.scss';
+import AuthWrapper from './../AuthWrapper';
 
 import {auth, handleUserProfile } from './../../firebase/utils';
 
@@ -63,27 +64,28 @@ class Signup extends Component {
 
         const { displayName, email, password, confirmPassword,  errors } = this.state;
 
-        return (
-            <div className = "signup">
-                <div className = "wrap">
-                  
-                    <h2>
-                        Signup
-                    </h2>
+        const configAuthWrapper = {
+            headline: 'Signup'
+        };
 
-                    {errors.length > 0 && (
-                        <ul>
-                            {errors.map( (err, index) => {
-                                return (
-                                    <li key = {index}>
-                                        {err}
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    )}
+        return (
+            <AuthWrapper { ...configAuthWrapper }>
 
                     <div className = "formWrap">
+
+                        {/* Will check and output any errors */}
+                        {errors.length > 0 && (  
+                            <ul>
+                                {errors.map( (err, index) => {
+                                    return (
+                                        <li key = {index}>
+                                            {err}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+
                         <form onSubmit={this.handleFormSubmit} >
                         {displayName}
                         <FormInput 
@@ -123,8 +125,7 @@ class Signup extends Component {
                         </Button>
                         </form>
                     </div>
-                </div>
-            </div>
+            </AuthWrapper>
         );
     }
 }
