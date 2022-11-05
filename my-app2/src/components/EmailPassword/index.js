@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 
 import './styles.scss';
@@ -8,52 +8,29 @@ import AuthWrapper from './../AuthWrapper';
 import FormInput from './../forms/FormInput';
 import Button from './../forms/Button';
 
-const initialState = {
-    email: '',
-    errors: []
-};
 
-class EmailPassword extends Component {
+const EmailPassword = props => {
+    const [email, setEmail] = useState('');
+    const [errors, setErrors] = useState([]);
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            ...initialState
-        };
-
-        //passes the data to handleChange
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange (e) {
-        const { name, value } = e.target;
-
-        //update state with email value
-        this.setState({
-            [name]: value
-        });
-    }
-
-    handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { email } = this.state;
-        const config = {
-            // TODO: Pass with hosted link when deploying
-            url: 'http://localhost:3001/login' //Link user goes to after clicking password reset link in email
-        };
-
         try {
+
+            const config = {
+                // TODO: Pass with hosted link when deploying
+                url: 'http://localhost:3001/login' //Link user goes to after clicking password reset link in email
+            };
+
             await auth.sendPasswordResetEmail(email, config)
                 .then( () => {
                     //Otherwise Redirect would override the current location in the history stack
-                    this.props.history.push('/login'); 
+                    props.history.push('/login'); 
                 })
                 .catch( () => {
                      const err = ['E-mail not found. Please try again.'];
-                     this.setState({
-                        errors: err
-                     })
+                     setErrors(err);
                 });
         }
         catch {
@@ -61,11 +38,6 @@ class EmailPassword extends Component {
         }
 
     }
-    
-    render() {
-        
-        const { email, errors } = this.state;
-
 
         const configAuthWrapper = {
             headline: 'Email Password'
@@ -86,13 +58,13 @@ class EmailPassword extends Component {
                             })}
                         </ul>
                     )}
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <FormInput 
                             type="email"
                             name="email"
                             value={email}
                             placeholder="Email"
-                            onChange={this.handleChange}
+                            handleChange={e => setEmail(e.target.value)}
                         />
 
                         <Button type = "submit">
@@ -104,7 +76,5 @@ class EmailPassword extends Component {
             </AuthWrapper>
         );
     }
-
-}
 
 export default withRouter(EmailPassword);
