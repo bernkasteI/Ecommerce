@@ -9,6 +9,7 @@ const mapState = ({ user }) => ({
 const useAuth = props => {
     const { currentUser } = useSelector(mapState);
 
+    // only unmount if user is not current user
     useEffect(() => {
         if (!currentUser) {
             props.history.push('./login')

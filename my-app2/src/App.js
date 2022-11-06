@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { auth, handleUserProfile } from './firebase/utils';
 
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentUser } from './redux/User/user.actions';
 
 //hoc 
@@ -22,8 +22,8 @@ import Dashboard from './pages/Dashboard';
 import './default.scss';
 
 const App = props => {
-
-  const { setCurrentUser, currentUser } = props;
+ 
+  const dispatch = useDispatch();
 
   useEffect(() => {
 
@@ -35,14 +35,14 @@ const App = props => {
           const userRef = await handleUserProfile(userAuth);
           userRef.onSnapshot(snapshot => {
             //dispatch action to redux store to update it with user info
-            setCurrentUser({
+            dispatch(setCurrentUser({
                 id: snapshot.id,
                 ...snapshot.data()
-            });
+            }));
           })
         }
         // will return default if user not logged in
-        setCurrentUser(userAuth);
+        dispatch(setCurrentUser(userAuth));
       });
 
     return () => {
@@ -51,7 +51,7 @@ const App = props => {
         authListener();
     };
 
-  }, [])
+  }, []);
 
 
     return (
@@ -84,7 +84,7 @@ const App = props => {
 
           <Route path ="/dashboard" 
             render={() => (
-              <WithAuth>
+              <WithAuth> {/* will redirect to homepage if not logged in */  } 
               <MainLayout>
                 <Dashboard />
               </MainLayout>
@@ -97,12 +97,4 @@ const App = props => {
     );
   }
 
-
-const mapStateToProps = ({user}) => ({
-  currentUser: user.currentUser
-});
-
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user))
-});
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

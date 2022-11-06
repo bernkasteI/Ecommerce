@@ -1,42 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPassword, resetAllAuthForms } from './../../redux/User/user.actions';
 import { withRouter } from 'react-router-dom';
 
 import './styles.scss';
-import { auth } from './../../firebase/utils';
 
 import AuthWrapper from './../AuthWrapper';
 import FormInput from './../forms/FormInput';
 import Button from './../forms/Button';
 
+const mapState = ({ user }) => ({
+    resetPasswordSuccess: user.resetPasswordSuccess,
+    resetPasswordError: user.resetPasswordError
+});
 
 const EmailPassword = props => {
+    const { resetPasswordSuccess, resetPasswordError } = useSelector(mapState);
+    const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [errors, setErrors] = useState([]);
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        if (resetPasswordSuccess) {
+            dispatch(resetAllAuthForms());
+            props.history.push('./login');
+        }
+    }, [resetPasswordSuccess]);
+
+    useEffect(() => {
+        if (Array.isArray(resetPasswordError) && resetPasswordError.length > 0 ) {
+            setErrors(resetPasswordError);
+        }
+    }, [resetPasswordError]);
+
+    const handleSubmit = e => {
         e.preventDefault();
-
-        try {
-
-            const config = {
-                // TODO: Pass with hosted link when deploying
-                url: 'http://localhost:3001/login' //Link user goes to after clicking password reset link in email
-            };
-
-            await auth.sendPasswordResetEmail(email, config)
-                .then( () => {
-                    //Otherwise Redirect would override the current location in the history stack
-                    props.history.push('/login'); 
-                })
-                .catch( () => {
-                     const err = ['E-mail not found. Please try again.'];
-                     setErrors(err);
-                });
-        }
-        catch {
-            //console.log(err);
-        }
-
+        dispatch(resetPassword({ email }));
     }
 
         const configAuthWrapper = {
