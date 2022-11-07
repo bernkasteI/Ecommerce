@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { auth, handleUserProfile } from './firebase/utils';
+import { checkUserSession } from './redux/User/user.actions';
+import { useDispatch } from 'react-redux';
 
-import { useSelector, useDispatch } from 'react-redux';
-import { setCurrentUser } from './redux/User/user.actions';
 
 //hoc 
 import WithAuth from './hoc/withAuth';
@@ -27,30 +26,7 @@ const App = props => {
 
   useEffect(() => {
 
-    // user has logged in
-    //subscribe to an event with an event listener. It tells us to subscribe to an event from firebase
-      //when the user logs in, to update the app
-     const authListener = auth.onAuthStateChanged(async userAuth => {
-        if (userAuth) {
-          const userRef = await handleUserProfile(userAuth);
-          userRef.onSnapshot(snapshot => {
-            //dispatch action to redux store to update it with user info
-            dispatch(setCurrentUser({
-                id: snapshot.id,
-                ...snapshot.data()
-            }));
-          })
-        }
-        // will return default if user not logged in
-        dispatch(setCurrentUser(userAuth));
-      });
-
-    return () => {
-      
-        //unsubscribe. ensures no memory leaks.
-        authListener();
-    };
-
+    dispatch(checkUserSession());
   }, []);
 
 
